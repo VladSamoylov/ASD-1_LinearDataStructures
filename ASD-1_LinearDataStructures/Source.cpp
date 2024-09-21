@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
+#include <chrono>
 
 using namespace std;
 
@@ -200,9 +201,237 @@ void DoubleLinkedList<T>::DeleteByPos(const int& position) {
 	delete this->current;
 }
 
+class Student {
+private:
+	string name;
+	string surname;
+	string lastname;
+	int specialty;
+	vector<string> discipline;
+	vector<chrono::year_month_day> data;
+	vector<int> estimation;
+	static int studentnumber;
+public:
+	Student();
+};
+
+class Heap {
+private:
+	vector<int> data;
+	bool max_heap;
+
+	void SiftUp();
+	void SiftDown(int);
+	int GetMinChild(const int&);
+	int GetMaxChild(const int&);
+	void Swap(const int&, const int&);
+public:
+	Heap(const vector<int>&);
+	void InsertElem(const int&);
+	void DeleteElem(const int&);
+	int ExtractRoot();
+	void RebuiltUnsortedData(const vector<int>&, const bool&);
+	void RebuiltToMaxHeap();
+	void RebuiltToMinHeap();
+	void Show(const bool&);
+	void HeapSort();
+};
+
+Heap::Heap(const vector<int>& unsortdata) {
+
+	this->data.push_back(99);
+	this->max_heap = true;
+	for (int i = 0; i < unsortdata.size(); i++) {
+		this->data.push_back(unsortdata[i]);
+		SiftUp();
+	}
+}
+
+void Heap::RebuiltUnsortedData(const vector<int>& unsortdata, const bool& max_heap) {
+
+	this->data.clear();
+	this->data.push_back(99);
+	this->max_heap = max_heap;
+	for (int i = 0; i < unsortdata.size(); i++) {
+		this->data.push_back(unsortdata[i]);
+		SiftUp();
+	}
+}
+
+void Heap::RebuiltToMinHeap() {
+
+	if (this->max_heap == false) { cout << "Error: <The Heap is current Min-Heap>" << endl; return; }
+	vector<int> tmp(this->data);
+	this->max_heap = false;
+	this->data.clear();
+	this->data.push_back(99);
+
+	for (int i = 1; i < tmp.size(); i++) {
+		this->data.push_back(tmp[i]);
+		SiftUp();
+	}
+}
+
+void Heap::RebuiltToMaxHeap() {
+
+	if (this->max_heap == true) { cout << "Error: <The Heap is current Max-Heap>" << endl; return; }
+	vector<int> tmp(this->data);
+	this->max_heap = true;
+	this->data.clear();
+	this->data.push_back(99);
+
+	for (int i = 1; i < tmp.size(); i++) {
+		this->data.push_back(tmp[i]);
+		SiftUp();
+	}
+}
+
+void Heap::SiftUp() {
+
+	int i = this->data.size() - 1;
+
+	while (i > 1) {
+		int parent = i / 2;
+		if (this->max_heap) {
+			if (this->data[parent] < this->data[i]) Swap(parent, i);
+			else break;
+		}
+		else {
+			if (this->data[parent] > this->data[i]) Swap(parent, i);
+			else break;
+		}
+		
+		i = parent;
+	}
+}
+
+void Heap::SiftDown(int parent) {
+	
+	while (2 * parent <= this->data.size() - 1) {
+		if (this->max_heap) {
+			int max_child = GetMaxChild(parent);
+			if (this->data[parent] < this->data[max_child]) {
+				Swap(parent, max_child);
+			}
+			else break;
+			parent = max_child;
+		}
+		else {
+			int min_child = GetMinChild(parent);
+			if (this->data[parent] > this->data[min_child]) {
+				Swap(parent, min_child);
+			}
+			else break;
+			parent = min_child;
+		}
+	}
+}
+
+int Heap::GetMinChild(const int& parent) {
+
+	if (2 * parent + 1 > this->data.size() - 1) return 2 * parent;
+	else {
+		if (this->data[2 * parent] < this->data[2 * parent + 1]) return 2 * parent;
+		else return 2 * parent + 1;
+	}
+}
+
+int Heap::GetMaxChild(const int& parent) {
+
+	if (2 * parent + 1 > this->data.size() - 1) return 2 * parent;
+	else {
+		if (this->data[2 * parent] > this->data[2 * parent + 1]) return 2 * parent;
+		else return 2 * parent + 1;
+	}
+}
+
+void Heap::Swap(const int& first_index, const int& second_index) {
+
+	int tmp = this->data[first_index];
+	this->data[first_index] = this->data[second_index];
+	this->data[second_index] = tmp;
+}
+
+int Heap::ExtractRoot() {
+
+	if (this->data.empty()) { cout << "Error: <Heap is Empty>" << endl; }
+	int root = this->data[1];
+	this->data[1] = this->data[this->data.size() - 1];
+	this->data.pop_back();
+	SiftDown(1);
+
+	return root;
+}
+
+void Heap::InsertElem(const int& element) {
+
+	this->data.push_back(element);
+	SiftUp();
+}
+
+void Heap::DeleteElem(const int& number_elem) {
+
+	if (number_elem > this->data.size() - 1 || number_elem < 0) { cout << "Error: <Out of the Range>"; return; }
+	if (number_elem == this->data.size() - 1) { this->data.pop_back(); cout << "The Last Element was Deleted" << endl; return; }
+	this->data[number_elem] = this->data[this->data.size() - 1];
+	this->data.pop_back();
+	SiftDown(number_elem);
+}
+
+void Heap::HeapSort() {
+
+
+
+}
+
+void Heap::Show(const bool& ischild) {
+
+	cout << "Max-Heap contains: ";
+	for (int i = 1; i < this->data.size(); i++) {
+		cout << this->data[i] << " ";
+	} cout << endl;
+	if (ischild) {
+		cout << "Parent-child: \n";
+		int n = 0;
+		for (int i = 1; i < this->data.size(); i++) {
+			if (this->data[i] / 10 == 0) n = 5;
+			else if (this->data[i] / 10 < 10) n = 4;
+			else n = 3;
+			string space(n, ' ');
+			cout << space << '(' << this->data[i] << ')';
+			if (2 * i <= this->data.size() - 1) {
+				cout << endl << space << '/';
+				if (2 * i + 1 <= this->data.size() - 1) { 
+					if (this->data[i] / 10 == 0) n = 1;
+					else if (this->data[i] / 10 < 10) n = 2;
+					else n = 0;
+					space.resize(n, ' ');
+					cout << space << '\\'; 
+				}
+				if (this->data[i] / 10 == 0) n = 3;
+				else if (this->data[i] / 10 < 10) n = 1;
+				else n = 0;
+				space.resize(n, ' ');
+				cout << endl << space << '(' << this->data[2 * i] << ')';
+			}
+			if (2 * i + 1 <= this->data.size() - 1) {
+				if (this->data[i] / 10 == 0 && this->data[2 * i + 1] / 10 == 0) n = 1;
+				else if (this->data[i] / 10 < 10 && (this->data[2 * i] / 10 < 10 && this->data[2 * i] / 10 > 0) && this->data[2 * i + 1] / 10 == 0) n = 2;
+				else if (this->data[i] / 10 < 10 && this->data[2 * i + 1] / 10 == 0) n = 4;
+				else if (this->data[i] / 10 == 0) n = 6;
+				else if (this->data[i] / 10 < 10) n = 2;
+				else n = 2;
+				space.resize(n, ' ');
+				cout << space << '(' << this->data[2 * i + 1] << ')' << endl;
+			}
+			else cout << endl;
+		}
+	}	
+}
+
 int main() {
 
-	int task = 9, ltask = 9;
+	int task = 99, ltask = 99, htask = 99;
 	int n = 10;
 	int position;
 	vector<string> data;
@@ -213,9 +442,12 @@ int main() {
 	for (int i = 0; i < n; i++) {
 		data_int.push_back(i + 1);
 	}
+	vector<int> data_heap{ 16, 14, 10, 8, 7, 9, 3, 2, 4, 1 };
 
 	DoubleLinkedList<string> v(n, data);
 	//DoubleLinkedList<int> v(n, data_int);
+
+	Heap h(data_int);
 
 	while (task != 0) {
 		switch (task) {
@@ -311,6 +543,76 @@ int main() {
 			}			
 			break;
 		case 2:
+			while (htask != 0) {
+				switch (htask) {
+				case 1:
+					cout << "\n!-Insert 12 to Heap\n";
+					h.InsertElem(12);
+					break;
+				case 2:
+					try {
+						cout << "\n!-Enter Elem Position: ";
+						cin >> position;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							throw "Error: <Incorrect Input Data>";
+						}
+						h.DeleteElem(position);
+						cout << "Element was deleted..." << endl;
+					}
+					catch (const char* err) {
+						cerr << endl << err << endl;
+					}
+					break;
+				case 3:
+					h.RebuiltToMaxHeap();
+					h.Show(0);
+					break;
+				case 4:
+					h.RebuiltToMinHeap();
+					h.Show(0);
+					break;
+				case 5:
+					h.Show(1);
+					break;
+				case 6:
+					cout << "The root of Heap : " << h.ExtractRoot() << endl;
+					break;
+				case 7:
+					cout << "Unsorted Data: ";
+					for (int i : data_heap) {
+						cout << i << " ";
+					}cout << endl;
+					h.RebuiltUnsortedData(data_heap, 0);
+					h.Show(0);
+					break;
+				}
+				cout << "\n________Work with Binary Heap________" << endl;
+				cout << setw(30) << left << "Insert Element " << " / Enter - 1" << endl;
+				cout << setw(30) << left << "Delete Chosen Element " << " / Enter - 2" << endl;
+				cout << setw(30) << left << "Rebuild to Max-heap " << " / Enter - 3" << endl;
+				cout << setw(30) << left << "Rebuild to Min-heap " << " / Enter - 4" << endl;
+				cout << setw(30) << left << "Show Elements" << " / Enter - 5" << endl;
+				cout << setw(30) << left << "Extract the root " << " / Enter - 6" << endl;
+				cout << setw(30) << left << "Rebuild (unsorted data) " << " / Enter - 7" << endl;
+				cout << setw(30) << left << "Back " << " / Enter - 0" << endl;
+				if (htask != 0) {
+					try {
+						cout << "\nChoose the Task: ";
+						cin >> htask;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+							throw "Error: <Incorrect Input Data>";
+						}
+					}
+					catch (const char* err) {
+						cerr << endl << err << endl;
+						htask = 99;
+					}
+				}
+			}
 			break;
 		case 0:
 			break;
