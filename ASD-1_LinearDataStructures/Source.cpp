@@ -1092,11 +1092,6 @@ int main() {
 					}cout << endl;
 					h.RebuiltUnsortedData(data_heap, 0);
 					h.Show(0);
-					h.HeapSort(data_heap);					
-					cout << "Sorted Data: ";
-					for (int i : data_heap) {
-						cout << i << " ";
-					}cout << endl;
 					break;
 				case 8:
 					h.ExtractSort(data_int);
@@ -1253,6 +1248,8 @@ int main() {
 
 		if (task != 0) {
 			ltask = 99;
+			htask = 99;
+			vtask = 99;
 			try {
 				cout << "\nChoose the Task: ";
 				cin >> task;
